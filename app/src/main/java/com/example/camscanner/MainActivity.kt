@@ -1,6 +1,9 @@
 package com.example.camscanner
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.graphics.pdf.PdfDocument
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -41,6 +44,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import java.io.File
+import com.example.camscanner.imagepdf.PdfGenerator
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +56,8 @@ class MainActivity : ComponentActivity() {
                     Column(
                         modifier = Modifier.padding(innerPadding)
                     ){
+//                        testPdf(LocalContext.current)
+//                        convertCacheImagesToPdf(LocalContext.current){ worked, message -> Log.d("func", message) }
                         CameraScreen()
                     }
                 }
@@ -60,6 +66,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+private fun deleteRecursively(file: File?) {
+    if (file == null || !file.exists()) return
+
+    if (file.isDirectory) {
+        file.listFiles()?.forEach { deleteRecursively(it) }
+    }
+    file.delete()
+}
 
 
 @Composable
@@ -126,7 +141,22 @@ fun CameraCaptureScreen() {
             Button(onClick = { capturePhoto(context, cameraController) }) {
                 Text("Capture")
             }
+
         }
+
+        // Bottom space / controls
+        Box(
+            modifier = Modifier
+                .height(120.dp)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Button(onClick = { PdfGenerator.convertCacheImagesToPdf(context){ worked, message -> Log.d("func", message) }}) {
+                Text("Save")
+            }
+        }
+
+
     }
 }
 
@@ -138,7 +168,8 @@ fun capturePhoto(
 ) {
 
     val file = File(
-        context.externalCacheDir,
+        context.cacheDir,
+//        context.cacheDir,
         "photo_${System.currentTimeMillis()}.jpg"
     )
 
@@ -194,3 +225,4 @@ fun CameraScreen() {
         }
     }
 }
+
