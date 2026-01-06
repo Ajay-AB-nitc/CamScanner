@@ -64,4 +64,6 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.4.0")
     implementation("androidx.camera:camera-view:1.4.0")
     implementation("com.google.accompanist:accompanist-permissions:0.36.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
 }

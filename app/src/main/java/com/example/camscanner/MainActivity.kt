@@ -29,6 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.camscanner.ui.theme.CamScannerTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -47,49 +50,17 @@ import java.io.File
 import com.example.camscanner.imagepdf.PdfGenerator
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var cameraController: LifecycleCameraController
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            CamScannerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(
-                        modifier = Modifier.padding(innerPadding)
-                    ){
-//                        testPdf(LocalContext.current)
-//                        convertCacheImagesToPdf(LocalContext.current){ worked, message -> Log.d("func", message) }
-                        CameraScreen()
-                    }
-                }
-            }
-        }
-    }
-}
 
-
-private fun deleteRecursively(file: File?) {
-    if (file == null || !file.exists()) return
-
-    if (file.isDirectory) {
-        file.listFiles()?.forEach { deleteRecursively(it) }
-    }
-    file.delete()
-}
-
-
-@Composable
-fun CameraCaptureScreen() {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    // Camera controller (manages preview + capture)
-    val cameraController = remember {
-
-        LifecycleCameraController(context).apply {
+        cameraController = LifecycleCameraController(this).apply {
             setEnabledUseCases(
                 CameraController.IMAGE_CAPTURE
             )
-
 
             val resolutionSelector = ResolutionSelector.Builder()
                 .setAspectRatioStrategy(
@@ -103,12 +74,42 @@ fun CameraCaptureScreen() {
             setPreviewResolutionSelector(resolutionSelector)
             setImageCaptureResolutionSelector(resolutionSelector)
         }
+
+        setContent {
+            val viewModel: MainViewModel = viewModel()
+            CamScannerTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Column(
+                        modifier = Modifier.padding(innerPadding)
+                    ){
+                        CameraScreen(cameraController, viewModel)
+                    }
+                }
+            }
+        }
     }
+}
+
+
+@Composable
+fun CameraCaptureScreen(
+    cameraController: LifecycleCameraController,
+    viewModel: MainViewModel
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val captureRequested by viewModel.captureRequested.collectAsState()
 
     // Bind camera to lifecycle
     LaunchedEffect(Unit) {
         cameraController.bindToLifecycle(lifecycleOwner)
+    }
 
+    LaunchedEffect(captureRequested) {
+        if (captureRequested){
+            capturePhoto(context, cameraController)
+            viewModel.captureHandled()
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -193,7 +194,10 @@ fun capturePhoto(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CameraScreen() {
+fun CameraScreen(
+    cameraController: LifecycleCameraController,
+    viewModel: MainViewModel
+) {
     val cameraPermission = rememberPermissionState(android.Manifest.permission.CAMERA)
 
     LaunchedEffect(Unit) {
@@ -201,14 +205,11 @@ fun CameraScreen() {
     }
 
     when {
-
         cameraPermission.status.isGranted -> {
-            CameraCaptureScreen()
-//            CameraPreview()
+            CameraCaptureScreen(cameraController, viewModel)
         }
 
         cameraPermission.status.shouldShowRationale -> {
-
             Column {
                 Text("Camera permission denied.")
                 Button(onClick = {
