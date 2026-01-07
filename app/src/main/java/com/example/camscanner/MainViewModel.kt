@@ -15,9 +15,11 @@ class MainViewModel : ViewModel(){
     private val _captureRequested = MutableStateFlow(false)
     private val _imageCount = MutableStateFlow(0)
     private val _saveRequested = MutableStateFlow(false)
+    private val _grayscaleEnabled = MutableStateFlow(false)
     val captureRequested : StateFlow<Boolean> = _captureRequested
     val imageCount : StateFlow<Int> = _imageCount
     val saveRequested : StateFlow<Boolean> = _saveRequested
+    val grayscaleEnabled : StateFlow<Boolean> = _grayscaleEnabled
 
     fun requestCapture(){
         _captureRequested.value = true
@@ -38,7 +40,10 @@ class MainViewModel : ViewModel(){
         Log.d("VM", "saveRequest set to false")
     }
 
+    fun toggleGrayscale(){
+        _grayscaleEnabled.value= !(_grayscaleEnabled.value)
+    }
      suspend fun savePdf(context: Context){
-         PdfGenerator.convertCacheImagesToPdf(context)
+         PdfGenerator.convertCacheImagesToPdf(context, _grayscaleEnabled.value)
     }
 }

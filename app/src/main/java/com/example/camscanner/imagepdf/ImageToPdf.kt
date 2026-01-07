@@ -17,7 +17,7 @@ import java.io.FileOutputStream
 
 object PdfGenerator {
 
-    suspend fun convertCacheImagesToPdf(context: Context) {
+    suspend fun convertCacheImagesToPdf(context: Context, grayscaleEnabled: Boolean) {
         withContext(Dispatchers.IO){
             try {
                 val cacheDir = context.cacheDir
@@ -57,12 +57,16 @@ object PdfGenerator {
                     }
 
 
+
                     val bitmap43 = BitmapFactory.decodeFile(file.absolutePath, options)
                     val rotate90 = Matrix().apply { postRotate(90f) }
-                    val bitmap = Bitmap.createBitmap(bitmap43, 0, 0, bitmap43.width, bitmap43.height, rotate90, true)
+                    var bitmap = Bitmap.createBitmap(bitmap43, 0, 0, bitmap43.width, bitmap43.height, rotate90, true)
 
+                    if (grayscaleEnabled){
+                        bitmap = convertToGrayscale(bitmap)
+                    }
 
-                    // Create a page with the bitmap dimensions
+                        // Create a page with the bitmap dimensions
                     val pageInfo = PdfDocument.PageInfo.Builder(
                         bitmap.width,
                         bitmap.height,
