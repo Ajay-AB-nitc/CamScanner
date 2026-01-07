@@ -86,7 +86,7 @@ fun CameraCaptureScreen(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Button(onClick = { PdfGenerator.convertCacheImagesToPdf(context){ worked, message -> Log.d("func", message) }}) {
+            Button(onClick = {viewModel.savePdf(context)}) {
                 Text("Save")
             }
         }

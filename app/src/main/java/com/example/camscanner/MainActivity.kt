@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.camscanner.camera.CameraScreen
+import com.example.camscanner.imagepdf.deleteRecursively
 import com.example.camscanner.ui.theme.CamScannerTheme
 
 class MainActivity : ComponentActivity() {
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
             setPreviewResolutionSelector(resolutionSelector)
             setImageCaptureResolutionSelector(resolutionSelector)
         }
-
+        deleteRecursively(this.cacheDir)
         setContent {
             val viewModel: MainViewModel = viewModel()
             CamScannerTheme {

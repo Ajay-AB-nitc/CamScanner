@@ -3,9 +3,12 @@ package com.example.camscanner
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.camscanner.imagepdf.PdfGenerator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 
 class MainViewModel : ViewModel(){
@@ -21,9 +24,8 @@ class MainViewModel : ViewModel(){
     }
 
     fun savePdf(context: Context){
-        PdfGenerator.convertCacheImagesToPdf(context){ worked, message ->
-            Log.d("PDF", message)
+        viewModelScope.launch {
+            PdfGenerator.convertCacheImagesToPdf(context)
         }
     }
-
 }
