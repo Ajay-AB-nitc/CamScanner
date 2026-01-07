@@ -2,6 +2,7 @@ package com.example.camscanner
 
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.camscanner.imagepdf.PdfGenerator
@@ -20,22 +21,24 @@ class MainViewModel : ViewModel(){
 
     fun requestCapture(){
         _captureRequested.value = true
+        Log.d("VM", "captureRequest set to ture")
     }
     fun captureHandled(){
         _captureRequested.value = false
+        Log.d("VM", "captureRequest set to false")
     }
 
     fun requestSave(){
         _saveRequested.value = true
+        Log.d("VM", "saveRequest set to true")
     }
 
     fun saveHandled(){
         _saveRequested.value = false
+        Log.d("VM", "saveRequest set to false")
     }
 
-    fun savePdf(context: Context){
-        viewModelScope.launch {
-            PdfGenerator.convertCacheImagesToPdf(context)
-        }
+     suspend fun savePdf(context: Context){
+         PdfGenerator.convertCacheImagesToPdf(context)
     }
 }

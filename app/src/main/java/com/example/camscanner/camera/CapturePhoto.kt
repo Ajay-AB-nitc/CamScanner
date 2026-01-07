@@ -6,12 +6,15 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.view.LifecycleCameraController
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
-fun capturePhoto(
+suspend fun capturePhoto(
     context: Context,
     cameraController: LifecycleCameraController
-) {
+): File = suspendCancellableCoroutine{ continuation ->
 
     val file = File(
         context.cacheDir,
@@ -26,9 +29,15 @@ fun capturePhoto(
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                 Log.d("Camera", "Saved: ${file.absolutePath}")
+                if (continuation.isActive){
+                    continuation.resume(file)
+                }
             }
             override fun onError(exception: ImageCaptureException) {
                 Log.e("Camera", "Capture failed", exception)
+                if (continuation.isActive){
+                    continuation.resumeWithException(exception)
+                }
             }
         }
     )

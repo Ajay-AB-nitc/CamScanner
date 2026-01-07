@@ -42,8 +42,12 @@ fun CameraCaptureScreen(
 
     LaunchedEffect(captureRequested) {
         if (captureRequested){
-            capturePhoto(context, cameraController)
-            viewModel.captureHandled()
+            try{
+                capturePhoto(context, cameraController)
+            }finally {
+                viewModel.captureHandled()
+            }
+
         }
     }
 
@@ -80,7 +84,10 @@ fun CameraCaptureScreen(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Button(onClick = {viewModel.requestCapture()}) {
+            Button(
+                enabled = (!captureRequested),
+                onClick = {viewModel.requestCapture()}
+            ) {
                 Text("Capture")
             }
 
@@ -93,7 +100,10 @@ fun CameraCaptureScreen(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Button(onClick = {viewModel.requestSave()}) {
+            Button(
+                enabled = !saveRequested,
+                onClick = {viewModel.requestSave()}
+            ) {
                 Text("Save")
             }
         }
