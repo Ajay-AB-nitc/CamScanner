@@ -1,6 +1,6 @@
 package com.example.camscanner.camera
 
-import android.util.Log
+
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.camscanner.MainViewModel
-import com.example.camscanner.imagepdf.PdfGenerator
+
 
 
 @Composable
@@ -33,6 +33,7 @@ fun CameraCaptureScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val captureRequested by viewModel.captureRequested.collectAsState()
+    val saveRequested by viewModel.saveRequested.collectAsState()
 
     // Bind camera to lifecycle
     LaunchedEffect(Unit) {
@@ -46,6 +47,12 @@ fun CameraCaptureScreen(
         }
     }
 
+    LaunchedEffect(saveRequested) {
+        if (saveRequested){
+            viewModel.savePdf(context)
+            viewModel.saveHandled()
+        }
+    }
     Column(modifier = Modifier.fillMaxSize()) {
 
         Box(
@@ -73,7 +80,7 @@ fun CameraCaptureScreen(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Button(onClick = { capturePhoto(context, cameraController) }) {
+            Button(onClick = {viewModel.requestCapture()}) {
                 Text("Capture")
             }
 
@@ -86,7 +93,7 @@ fun CameraCaptureScreen(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Button(onClick = {viewModel.savePdf(context)}) {
+            Button(onClick = {viewModel.requestSave()}) {
                 Text("Save")
             }
         }
