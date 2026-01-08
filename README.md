@@ -1,4 +1,3 @@
-md
 # CamScanner
 
 A lightweight, minimal Android application for capturing photos via the camera and converting them into PDF documents. Built with modern Android technologies including Jetpack Compose, CameraX, and Coroutines.
@@ -22,9 +21,7 @@ A lightweight, minimal Android application for capturing photos via the camera a
 *   **Async Processing:** Kotlin Coroutines
 *   **Permissions:** Accompanist Permissions
 
-## 🏗️ Getting Started
-
-### Prerequisites
+## 🏗️ Prerequisites
 
 *   Android Studio Ladybug (or newer)
 *   Android SDK 24+ (Android 7.0 or higher)
