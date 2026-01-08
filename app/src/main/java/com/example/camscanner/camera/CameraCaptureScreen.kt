@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,7 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -92,31 +90,12 @@ fun CameraCaptureScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
-                .height(120.dp)
+                .height(40.dp)
                 .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                FilterChip(
-                    onClick = { viewModel.toggleGrayscale() },
-                    label = {
-                        Text("Grayscale")
-                    },
-                    selected = grayscaleEnabled
-                )
+            contentAlignment = Alignment.Center,
 
-                FilterChip(
-                    onClick = { viewModel.toggleTorch() },
-                    label = {
-                        Text("Torch")
-                    },
-                    selected = torchEnabled
-                )
-            }
+        ) {
+
         }
 
         Box(
@@ -137,18 +116,6 @@ fun CameraCaptureScreen(
             )
         }
 
-//        // Bottom space / controls
-//        Box(
-//            modifier = Modifier
-//                .height(120.dp)
-//                .fillMaxWidth(),
-//            contentAlignment = Alignment.Center
-//        ) {
-//
-//
-//        }
-
-        // Bottom space / controls
         Box(
             modifier = Modifier
                 .height(120.dp)
@@ -169,16 +136,11 @@ fun CameraCaptureScreen(
                     Text("Capture")
                 }
 
-//                Button(
-//                    enabled = !saveRequested,
-//                    onClick = {viewModel.requestSave()}
-//                ) {
-//                    Text("Save")
-//                }
 
                 IconButton(
                     onClick = {
-                        viewModel.requestSave()                    }
+                        viewModel.requestSave()
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Save,
@@ -186,6 +148,38 @@ fun CameraCaptureScreen(
                     )
                 }
 
+            }
+        }
+
+
+
+        Box(
+            modifier = Modifier
+                .height(120.dp)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+
+            ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FilterChip(
+                    onClick = { viewModel.toggleGrayscale() },
+                    label = {
+                        Text("Grayscale")
+                    },
+                    selected = grayscaleEnabled
+                )
+
+                FilterChip(
+                    onClick = { viewModel.toggleTorch() },
+                    label = {
+                        Text("Torch")
+                    },
+                    selected = torchEnabled
+                )
             }
         }
     }
