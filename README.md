@@ -20,6 +20,7 @@ A lightweight, minimal Android application for capturing photos via the camera a
 *   **Image Loading:** Coil 3
 *   **Async Processing:** Kotlin Coroutines
 *   **Permissions:** Accompanist Permissions
+*   **Grayscale:** OpenCV 
 
 ## 🏗️ Prerequisites
 
