@@ -15,7 +15,7 @@ android {
         minSdk = 25
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -66,6 +66,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.36.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
-//    implementation("org.opencv:opencv-android:4.9.0")
     implementation("com.quickbirdstudios:opencv:4.5.3.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+
 }
