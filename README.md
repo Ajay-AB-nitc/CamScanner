@@ -29,3 +29,6 @@ A lightweight, minimal Android application for capturing photos via the camera a
 *   Kotlin 2.1.0+
 
     
+## 👥 Contributing
+
+* [Main Code](app/src/main/java/com/example/app/camscanner)
