@@ -38,6 +38,10 @@ class MainViewModel : ViewModel(){
     }
 
     fun requestSave(){
+        if (_imageCount.value == 0){
+            return
+        }
+        Log.d("VM", "requestSave called")
         _saveRequested.value = true
         Log.d("VM", "saveRequest set to true")
     }

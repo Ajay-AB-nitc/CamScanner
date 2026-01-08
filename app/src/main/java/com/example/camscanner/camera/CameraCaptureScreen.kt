@@ -12,9 +12,13 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -133,21 +137,16 @@ fun CameraCaptureScreen(
             )
         }
 
-        // Bottom space / controls
-        Box(
-            modifier = Modifier
-                .height(120.dp)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(
-                enabled = (!captureRequested),
-                onClick = {viewModel.requestCapture()}
-            ) {
-                Text("Capture")
-            }
-
-        }
+//        // Bottom space / controls
+//        Box(
+//            modifier = Modifier
+//                .height(120.dp)
+//                .fillMaxWidth(),
+//            contentAlignment = Alignment.Center
+//        ) {
+//
+//
+//        }
 
         // Bottom space / controls
         Box(
@@ -161,13 +160,32 @@ fun CameraCaptureScreen(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
-                    enabled = !saveRequested,
-                    onClick = {viewModel.requestSave()}
-                ) {
-                    Text("Save")
-                }
                 Thumbnail(viewModel, context)
+
+                Button(
+                    enabled = (!captureRequested),
+                    onClick = {viewModel.requestCapture()}
+                ) {
+                    Text("Capture")
+                }
+
+//                Button(
+//                    enabled = !saveRequested,
+//                    onClick = {viewModel.requestSave()}
+//                ) {
+//                    Text("Save")
+//                }
+
+                IconButton(
+                    onClick = {
+                        viewModel.requestSave()                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Save,
+                        contentDescription = "Save"
+                    )
+                }
+
             }
         }
     }

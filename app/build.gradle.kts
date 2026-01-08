@@ -68,5 +68,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
     implementation("com.quickbirdstudios:opencv:4.5.3.0")
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+    implementation("androidx.compose.material:material-icons-extended")
 
 }
