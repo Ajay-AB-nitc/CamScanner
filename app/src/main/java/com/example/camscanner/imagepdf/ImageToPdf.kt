@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.pdf.PdfDocument
 import android.graphics.Matrix
 import android.hardware.biometrics.BiometricManager
+import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,7 @@ import java.io.FileOutputStream
 
 object PdfGenerator {
 
-    suspend fun convertCacheImagesToPdf(context: Context, grayscaleEnabled: Boolean) {
+    suspend fun convertCacheImagesToPdf(context: Context, grayscaleEnabled: Boolean, saveUri: Uri) {
         withContext(Dispatchers.IO){
             try {
                 val cacheDir = context.cacheDir
@@ -84,21 +85,27 @@ object PdfGenerator {
                     Log.d("PDF", "Drew page no ${index+1}")
                 }
                 // Save the PDF to cache directory
-                val outputFile = File(
+//                val outputFile = File(
+//
+////                cacheDir,
+//                    context.externalCacheDir,
+//                    "cache_images_${System.currentTimeMillis()}.pdf"
+//                )
+//
+//                FileOutputStream(outputFile).use { outputStream ->
+//                    pdfDocument.writeTo(outputStream)
+//                }
 
-//                cacheDir,
-                    context.externalCacheDir,
-                    "cache_images_${System.currentTimeMillis()}.pdf"
-                )
-
-                FileOutputStream(outputFile).use { outputStream ->
-                    pdfDocument.writeTo(outputStream)
-                }
-
+                context.contentResolver
+                    .openOutputStream(saveUri)
+                    ?.use { outputStream ->
+                        pdfDocument.writeTo(outputStream)
+                    }
+                
                 pdfDocument.close()
 
 
-                Log.d("PDF","PDF created with ${imageFiles.size} images\nSaved to: ${outputFile.absolutePath}")
+                Log.d("PDF","PDF created with ${imageFiles.size} images\nSaved to: $saveUri")
 
                 deleteRecursively(context.cacheDir)
 

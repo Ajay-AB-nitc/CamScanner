@@ -13,12 +13,13 @@ import kotlin.coroutines.resumeWithException
 
 suspend fun capturePhoto(
     context: Context,
+    imgNumber: Int,
     cameraController: LifecycleCameraController
 ): File = suspendCancellableCoroutine{ continuation ->
 
     val file = File(
         context.cacheDir,
-        "photo_${System.currentTimeMillis()}.jpg"
+        "img${imgNumber}.jpg"
     )
 
     val outputOptions = ImageCapture.OutputFileOptions.Builder(file).build()

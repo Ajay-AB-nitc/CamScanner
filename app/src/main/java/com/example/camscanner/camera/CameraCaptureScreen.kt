@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,16 +23,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.viewModelScope
 import com.example.camscanner.MainViewModel
+import com.example.camscanner.Thumbnail
+import kotlinx.coroutines.launch
 
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CameraCaptureScreen(
     cameraController: LifecycleCameraController,
@@ -40,6 +44,19 @@ fun CameraCaptureScreen(
     val captureRequested by viewModel.captureRequested.collectAsState()
     val saveRequested by viewModel.saveRequested.collectAsState()
     val grayscaleEnabled by viewModel.grayscaleEnabled.collectAsState()
+    val imgCount by viewModel.imageCount.collectAsState()
+    val torchEnabled by viewModel.torchEnabled.collectAsState()
+
+
+
+    val createPdfLauncher = DocumentPicker("application/pdf") { uri ->
+        uri.let {
+            viewModel.viewModelScope.launch {
+                viewModel.savePdf(context, it)
+            }
+        }
+        viewModel.saveHandled()
+    }
 
     // Bind camera to lifecycle
     LaunchedEffect(Unit) {
@@ -49,7 +66,7 @@ fun CameraCaptureScreen(
     LaunchedEffect(captureRequested) {
         if (captureRequested){
             try{
-                capturePhoto(context, cameraController)
+                capturePhoto(context, imgCount+1, cameraController)
             }finally {
                 viewModel.captureHandled()
             }
@@ -59,10 +76,15 @@ fun CameraCaptureScreen(
 
     LaunchedEffect(saveRequested) {
         if (saveRequested){
-            viewModel.savePdf(context)
-            viewModel.saveHandled()
+            createPdfLauncher.launch("${System.currentTimeMillis()}.pdf")
         }
     }
+
+    LaunchedEffect(torchEnabled) {
+            cameraController.cameraControl?.enableTorch(torchEnabled)
+    }
+
+
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
@@ -70,13 +92,27 @@ fun CameraCaptureScreen(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            FilterChip(
-                onClick = {viewModel.toggleGrayscale()},
-                label = {
-                    Text("Grayscale")
-                },
-                selected = grayscaleEnabled
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FilterChip(
+                    onClick = { viewModel.toggleGrayscale() },
+                    label = {
+                        Text("Grayscale")
+                    },
+                    selected = grayscaleEnabled
+                )
+
+                FilterChip(
+                    onClick = { viewModel.toggleTorch() },
+                    label = {
+                        Text("Torch")
+                    },
+                    selected = torchEnabled
+                )
+            }
         }
 
         Box(
@@ -120,11 +156,18 @@ fun CameraCaptureScreen(
                 .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Button(
-                enabled = !saveRequested,
-                onClick = {viewModel.requestSave()}
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Save")
+                Button(
+                    enabled = !saveRequested,
+                    onClick = {viewModel.requestSave()}
+                ) {
+                    Text("Save")
+                }
+                Thumbnail(viewModel, context)
             }
         }
     }
