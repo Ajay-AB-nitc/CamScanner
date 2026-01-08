@@ -31,4 +31,4 @@ A lightweight, minimal Android application for capturing photos via the camera a
     
 ## 👥 Contributing
 
-* [Main Code](app/src/main/java/com/example/app/camscanner)
+* [Main Code](app/src/main/java/com/example/camscanner)
